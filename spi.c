@@ -551,6 +551,9 @@ int spi_deinit(void)
 
 int spi_open(int nport)
 {
+    char *freqstr;
+    unsigned long freq;
+
     WINE_TRACE("(%d)\n", nport);
 
     if (spi_dev_open > 0) {
@@ -609,7 +612,16 @@ int spi_open(int nport)
      * syncbb mode?):
      * http://developer.intra2net.com/mailarchive/html/libftdi/2010/msg00240.html
      */
-    if (ftdi_set_baudrate(&ftdic, (SPI_CLOCK_FREQ * 2) / 16) < 0) {
+    freq = SPI_CLOCK_FREQ;
+    freqstr = getenv("SPI_CLOCK");
+    if (freqstr != NULL && freqstr[0] != '\0') {
+        freq = strtoul(freqstr, NULL, 0);
+        if (freq == 0)
+            freq = SPI_CLOCK_FREQ;
+    }
+    WINE_TRACE("FTDI: setting SPI clock frequency: %lu, baudrate: %lu\n",
+            freq, (freq * 2) / 16);
+    if (ftdi_set_baudrate(&ftdic, (freq * 2) / 16) < 0) {
         spi_err("FTDI: set baudrate failed: %s", ftdi_get_error_string(&ftdic));
         goto open_err;
     }
