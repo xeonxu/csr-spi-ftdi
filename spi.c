@@ -17,8 +17,8 @@
 #include "hexdump.h"
 #include "compat.h"
 
-/* SPI clock frequency. At maximum I got 15KB/s reads at 2 MHz SPI clock. */
-#define SPI_CLOCK_FREQ    2000000
+/* FTDI clock frequency. At maximum I got 15KB/s reads at 4 MHz clock. */
+#define FTDI_CLOCK_FREQ    4000000
 #define SPI_READ_WAIT_INTVL_us   500    /* Microseconds */
 
 /*
@@ -612,16 +612,16 @@ int spi_open(int nport)
      * syncbb mode?):
      * http://developer.intra2net.com/mailarchive/html/libftdi/2010/msg00240.html
      */
-    freq = SPI_CLOCK_FREQ;
-    freqstr = getenv("SPI_CLOCK");
+    freq = FTDI_CLOCK_FREQ;
+    freqstr = getenv("FTDI_CLOCK");
     if (freqstr != NULL && freqstr[0] != '\0') {
         freq = strtoul(freqstr, NULL, 0);
         if (freq == 0)
-            freq = SPI_CLOCK_FREQ;
+            freq = FTDI_CLOCK_FREQ;
     }
-    WINE_TRACE("FTDI: setting SPI clock frequency: %lu, baudrate: %lu\n",
-            freq, (freq * 2) / 16);
-    if (ftdi_set_baudrate(&ftdic, (freq * 2) / 16) < 0) {
+    WINE_TRACE("FTDI: setting FTDI clock frequency: %lu, baudrate: %lu\n",
+            freq, freq / 16);
+    if (ftdi_set_baudrate(&ftdic, freq / 16) < 0) {
         spi_err("FTDI: set baudrate failed: %s", ftdi_get_error_string(&ftdic));
         goto open_err;
     }
