@@ -194,13 +194,16 @@ DLLEXPORT void __cdecl spifns_chip_select(int nChip) {
 }
 //RE Check: Completely identical
 DLLEXPORT const char* __cdecl spifns_command(const char *szCmd) {
-    WINE_TRACE("(%s)\n", szCmd);
 	if (stricmp(szCmd,"SPISLOWER")==0) {
-		//TODO!
-		/*if (g_nSpiShiftPeriod<40) {
-			//SPI Shift Period seems to be done about 1.5 times, plus 1 to compensate for rounding down (for example in 1)
-			spifns_debugout("Delays now %d\n",g_nSpiShiftPeriod=g_nSpiShiftPeriod + (g_nSpiShiftPeriod>>2) + 1); //>>2 => /2 ?
-		}*/
+		//SPI Shift Period seems to be done about 1.5 times, plus 1 to compensate for rounding down (for example in 1)
+        g_nSpiClock = (g_nSpiClock * 2) / 3;
+        if (g_nSpiClock < 25)
+            g_nSpiClock = 25;
+        WINE_TRACE("%s: set SPI clock to %lu\n", szCmd, g_nSpiClock);
+        if (spi_set_clock(g_nSpiClock) < 0) {
+            /* XXX */
+            return 0;
+        }
 	}
 	return 0;
 }
