@@ -1,9 +1,21 @@
 #include "spifns.h"
-#include <Windows.h>
+// #include <Windows.h>
+#include <windows.h>
 #include <stdio.h>
 #include "basics.h"
 #include <tchar.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <ctype.h>
+#include <stdarg.h>
+#include <string.h>
 
+#if 1
+#define stricmp strcasecmp
+#define _stricmp strcasecmp
+#define _strnicmp strncasecmp
+#define _snprintf snprintf
+#endif
 /*
  * README:
  * I attempted to reverse engineer spilpt.dll the best I could.
