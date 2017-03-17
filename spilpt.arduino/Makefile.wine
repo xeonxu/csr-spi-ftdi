@@ -23,10 +23,10 @@ CPPFLAGS += -DGIT_REVISION=\"$(GIT_REVISION)\"
 
 CC =	winegcc
 CXX =	wineg++
-LD =	winegcc
-CFLAGS +=	-Wall -m32 -fPIC -DPIC --std=gnu++0x
-CXXFLAGS += -fno-exceptions 
-LDFLAGS +=	-shared -m32 -static-libgcc
+LD =	wineg++
+CFLAGS += -m32 -fPIC -DPIC -D__WINESRC__
+CXXFLAGS += -fno-exceptions
+LDFLAGS += -m32 -shared -static-libgcc
 # 64 bit winegcc tries to link with 64 bit wine libs even if -m32 is specified.
 # Direct it to the 32bit libraries.
 LDFLAGS +=	$(addprefix -L,$(WINE_LIB)) $(addprefix -L,$(I386_LIB)) $(addprefix -L,$(STDCXX_LIB))
@@ -39,7 +39,7 @@ MAKEFILE =	$(firstword $(MAKEFILE_LIST))
 LIBDIR = lib-wine-$(TARGET_PLATFORM)
 OBJDIR = obj-wine-$(TARGET_PLATFORM)
 LIBNAME = spilpt.dll.so
-LIBRARY_SPEC = #library.def
+LIBRARY_SPEC = spilpt.spec
 
 all: $(LIBDIR)/$(LIBNAME)
 
@@ -47,7 +47,7 @@ $(LIBDIR)/$(LIBNAME): $(OBJDIR)/$(LIBNAME)
 	mkdir -p $(LIBDIR)
 	cp -p $< $@
 
-$(OBJDIR)/$(LIBNAME): $(OBJDIR)/basics.o $(LIBRARY_SPEC)
+$(OBJDIR)/$(LIBNAME): $(OBJDIR)/basics.o $(OBJDIR)/wine_main.o $(LIBRARY_SPEC)
 	$(LD) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 install:
