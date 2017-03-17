@@ -73,6 +73,7 @@ DLLEXPORT void __cdecl spifns_getvarlist(const SPIVARDEF **ppList, unsigned int 
 //Original uses 'add g_nRef, 1'
 //Compiler makes 'inc g_nRef'
 DLLEXPORT int __cdecl spifns_init() {
+	printf("spilpt.arduino.dll enabled!\n");
 	g_nRef+=1;
 	return 0;
 }
